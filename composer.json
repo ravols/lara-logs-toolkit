@@ -1,11 +1,11 @@
 {
-    "name": "ravols/lara-logs-notifier",
-    "description": ":package_description",
+    "name": "ravols/lara-logs-toolkit",
+    "description": "LaraLogsToolkit is a package that allows you to analyze your logs and get the count of errors, info and warnings.",
     "keywords": [
         "ravols",
-        "lara-logs-notifier"
+        "lara-logs-toolkit"
     ],
-    "homepage": "https://github.com/ravols/lara-logs-notifier",
+    "homepage": "https://github.com/ravols/lara-logs-toolkit",
     "license": "MIT",
     "authors": [
         {
