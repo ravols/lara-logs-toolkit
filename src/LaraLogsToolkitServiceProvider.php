@@ -3,6 +3,7 @@
 namespace Slovar\LaraLogsToolkit;
 
 use Illuminate\Support\ServiceProvider;
+use Slovar\LaraLogsToolkit\Commands\CheckLogRecordsCommand;
 use Slovar\LaraLogsToolkit\Commands\LogComposerDumpAutoloadCommand;
 
 class LaraLogsToolkitServiceProvider extends ServiceProvider
@@ -28,6 +29,7 @@ class LaraLogsToolkitServiceProvider extends ServiceProvider
 
             $this->commands([
                 LogComposerDumpAutoloadCommand::class,
+                CheckLogRecordsCommand::class,
             ]);
         }
     }

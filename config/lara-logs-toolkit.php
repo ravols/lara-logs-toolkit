@@ -16,4 +16,3 @@ return [
     'channel' => env('LARA_LOGS_TOOLKIT_CHANNEL', 'daily'),
 
 ];
-

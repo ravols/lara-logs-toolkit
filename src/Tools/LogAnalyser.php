@@ -227,7 +227,7 @@ class LogAnalyser
         return $this->logCounts['emergency'];
     }
 
-    public function getAllCounts(): array
+    public function getCounts(): array
     {
         return $this->logCounts;
     }

@@ -89,7 +89,6 @@ php artisan lara-logs:check-records
 # Check a specific channel
 php artisan lara-logs:check-records daily
 php artisan lara-logs:check-records api
-php artisan lara-logs:check-records carriers
 ```
 
 The command will output:
