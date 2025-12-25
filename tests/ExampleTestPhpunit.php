@@ -1,6 +1,6 @@
 <?php
 
-namespace VendorName\Skeleton\Tests;
+namespace Slovar\LaraLogsToolkit\Tests;
 
 use PHPUnit\Framework\TestCase;
 

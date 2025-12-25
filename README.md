@@ -1,42 +1,109 @@
-# :package_description
+# Lara Logs Toolkit
 
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/:vendor_slug/:package_slug.svg?style=flat-square)](https://packagist.org/packages/:vendor_slug/:package_slug)
-[![Tests](https://img.shields.io/github/actions/workflow/status/:vendor_slug/:package_slug/run-tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/:vendor_slug/:package_slug/actions/workflows/run-tests.yml)
-[![Total Downloads](https://img.shields.io/packagist/dt/:vendor_slug/:package_slug.svg?style=flat-square)](https://packagist.org/packages/:vendor_slug/:package_slug)
-<!--delete-->
----
-This package can be used as to scaffold a framework agnostic package. Follow these steps to get started:
+A Laravel package that helps you track deployments and monitor log file growth by providing deployment markers and log record counting capabilities.
 
-1. Press the "Use template" button at the top of this repo to create a new repo with the contents of this skeleton
-2. Run "php ./configure.php" to run a script that will replace all placeholders throughout all the files
-3. Have fun creating your package.
-4. If you need help creating a package, consider picking up our <a href="https://laravelpackage.training">Laravel Package Training</a> video course.
----
-<!--/delete-->
-This is where your description should go. Try and limit it to a paragraph or two. Consider adding a small example.
+## Problems This Package Solves
 
-## Support us
+### Problem 1: When Did Errors Occur?
 
-[<img src="https://github-ads.s3.eu-central-1.amazonaws.com/:package_name.jpg?t=1" width="419px" />](https://spatie.be/github-ad-click/:package_name)
+**The Issue:** When you see errors in your logs, it's often impossible to tell if they happened before or after your latest deployment. This makes debugging much harder, especially when you need to determine if a deployment introduced new issues.
 
-We invest a lot of resources into creating [best in class open source packages](https://spatie.be/open-source). You can support us by [buying one of our paid products](https://spatie.be/open-source/support-us).
+**The Solution:** This package automatically logs a timestamp marker whenever `composer dump-autoload` finishes. By adding a single line to your `composer.json`, you'll have clear deployment markers in your logs, making it easy to see which errors occurred before or after each deployment.
 
-We highly appreciate you sending us a postcard from your hometown, mentioning which of our package(s) you are using. You'll find our address on [our contact page](https://spatie.be/about-us). We publish all received postcards on [our virtual postcard wall](https://spatie.be/open-source/postcards).
+### Problem 2: Log Files Filling Up After Deployment
+
+**The Issue:** After a deployment, your logs might start filling up with errors, but if you're distracted or not actively monitoring, you might miss critical issues until they become severe.
+
+**The Solution:** This package provides a command to quickly check how many log records exist in any specified log channel from your `config/logging.php`. Run it after deployments or set it up in monitoring to get instant visibility into log growth.
 
 ## Installation
 
 You can install the package via composer:
 
 ```bash
-composer require :vendor_slug/:package_slug
+composer require ravols/lara-logs-toolkit
+```
+
+## Configuration
+
+Publish the configuration file:
+
+```bash
+php artisan vendor:publish --tag=lara-logs-toolkit-config
+```
+
+This will create `config/lara-logs-toolkit.php` where you can configure the default log channel:
+
+```php
+'channel' => env('LARA_LOGS_TOOLKIT_CHANNEL', 'daily'),
+```
+
+You can also set the channel via `.env`:
+
+```env
+LARA_LOGS_TOOLKIT_CHANNEL=daily
 ```
 
 ## Usage
 
-```php
-$skeleton = new VendorName\Skeleton();
-echo $skeleton->echoPhrase('Hello, VendorName!');
+### Deployment Tracking
+
+To automatically log when `composer dump-autoload` finishes, add this line to the `scripts` section of your `composer.json`:
+
+```json
+{
+    "scripts": {
+        "post-autoload-dump": [
+            "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
+            "@php artisan package:discover --ansi",
+            "@php artisan lara-logs:composer-dump-autoload"
+        ]
+    }
+}
 ```
+
+Now, every time you run `composer dump-autoload` (which happens automatically during deployments), you'll see a log entry like:
+
+```
+[2025-12-25 11:01:23] local.INFO: Composer dump-autoload finished at 2025-12-25 11:01:23
+```
+
+This creates a clear marker in your logs, making it easy to identify which errors occurred before or after each deployment.
+
+### Checking Log Record Counts
+
+To check how many log records exist in a specific channel:
+
+```bash
+php artisan lara-logs:check-records [channel]
+```
+
+If no channel is specified, it will use the channel configured in `config/lara-logs-toolkit.php` (defaults to `daily`).
+
+**Examples:**
+
+```bash
+# Check the default channel (from config)
+php artisan lara-logs:check-records
+
+# Check a specific channel
+php artisan lara-logs:check-records daily
+php artisan lara-logs:check-records api
+php artisan lara-logs:check-records carriers
+```
+
+The command will output:
+
+```
+Channel 'daily' contains 1523 log record(s).
+```
+
+This is especially useful after deployments to quickly see if error counts have increased, or you can integrate it into your monitoring/alerting system.
+
+## Available Commands
+
+- `php artisan lara-logs:composer-dump-autoload` - Manually log a deployment marker
+- `php artisan lara-logs:check-records [channel]` - Check log record count for a channel
 
 ## Testing
 
@@ -58,7 +125,7 @@ Please review [our security policy](../../security/policy) on how to report secu
 
 ## Credits
 
-- [:author_name](https://github.com/:author_username)
+- [Jaroslav Stefanec](https://github.com/jaroslavstefanec)
 - [All Contributors](../../contributors)
 
 ## License
