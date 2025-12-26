@@ -42,7 +42,7 @@ This will create `config/lara-logs-toolkit.php` where you can configure the defa
 ```
 
 **Configuration Options:**
-- `channel` - The log channel where the composer dump-autoload notification will be written. This should match one of the channels defined in your application's logging configuration.
+- `composer_dump_autoload_channel` - The log channel where the composer dump-autoload notification will be written. This should match one of the channels defined in your application's logging configuration.
 - `comparison_cache_ttl` - Cache time-to-live in seconds for storing log analysis comparison results (default: `600` seconds / 10 minutes)
 
 ## Usage
