@@ -1,10 +1,10 @@
 <?php
 
-namespace Slovar\LaraLogsToolkit;
+namespace Ravols\LaraLogsToolkit;
 
 use Illuminate\Support\ServiceProvider;
-use Slovar\LaraLogsToolkit\Commands\CheckLogRecordsCommand;
-use Slovar\LaraLogsToolkit\Commands\LogComposerDumpAutoloadCommand;
+use Ravols\LaraLogsToolkit\Commands\CheckLogRecordsCommand;
+use Ravols\LaraLogsToolkit\Commands\LogComposerDumpAutoloadCommand;
 
 class LaraLogsToolkitServiceProvider extends ServiceProvider
 {

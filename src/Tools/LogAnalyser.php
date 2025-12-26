@@ -1,8 +1,9 @@
 <?php
 
-namespace Slovar\LaraLogsToolkit\Tools;
+namespace Ravols\LaraLogsToolkit\Tools;
 
 use Psr\Log\LoggerInterface;
+use Ravols\LaraLogsToolkit\Data\LogCountsData;
 
 class LogAnalyser
 {
@@ -12,14 +13,20 @@ class LogAnalyser
         'info' => 0,
         'warning' => 0,
         'emergency' => 0,
+        'alert' => 0,
+        'critical' => 0,
+        'debug' => 0,
+        'notice' => 0,
     ];
 
-    public function setLogger(LoggerInterface $logger): void
+    public function setLogger(LoggerInterface $logger): self
     {
         $this->logger = $logger;
+
+        return $this;
     }
 
-    public function analyzeLogs(): void
+    public function analyzeLogs(): LogCountsData
     {
         $handlers = $this->getHandlers();
 
@@ -45,6 +52,8 @@ class LogAnalyser
 
             $this->countLogLevels($content);
         }
+
+        return LogCountsData::fromArray($this->logCounts);
     }
 
     protected function getHandlers(): array
@@ -205,30 +214,9 @@ class LogAnalyser
         $this->logCounts['info'] += substr_count($content, '.INFO');
         $this->logCounts['warning'] += substr_count($content, '.WARNING');
         $this->logCounts['emergency'] += substr_count($content, '.EMERGENCY');
-    }
-
-    public function getErrorCount(): int
-    {
-        return $this->logCounts['error'];
-    }
-
-    public function getInfoCount(): int
-    {
-        return $this->logCounts['info'];
-    }
-
-    public function getWarningCount(): int
-    {
-        return $this->logCounts['warning'];
-    }
-
-    public function getEmergencyCount(): int
-    {
-        return $this->logCounts['emergency'];
-    }
-
-    public function getCounts(): array
-    {
-        return $this->logCounts;
+        $this->logCounts['alert'] += substr_count($content, '.ALERT');
+        $this->logCounts['critical'] += substr_count($content, '.CRITICAL');
+        $this->logCounts['debug'] += substr_count($content, '.DEBUG');
+        $this->logCounts['notice'] += substr_count($content, '.NOTICE');
     }
 }

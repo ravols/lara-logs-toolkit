@@ -24,21 +24,21 @@
     },
     "autoload": {
         "psr-4": {
-            "Slovar\\LaraLogsToolkit\\": "src"
+            "Ravols\\LaraLogsToolkit\\": "src"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Slovar\\LaraLogsToolkit\\Tests\\": "tests"
+            "Ravols\\LaraLogsToolkit\\Tests\\": "tests"
         }
     },
     "extra": {
         "laravel": {
             "providers": [
-                "Slovar\\LaraLogsToolkit\\LaraLogsToolkitServiceProvider"
+                "Ravols\\LaraLogsToolkit\\LaraLogsToolkitServiceProvider"
             ],
             "aliases": {
-                "LaraLogsToolkit": "Slovar\\LaraLogsToolkit\\Facades\\LaraLogsToolkit"
+                "LaraLogsToolkit": "Ravols\\LaraLogsToolkit\\Facades\\LaraLogsToolkit"
             }
         }
     },

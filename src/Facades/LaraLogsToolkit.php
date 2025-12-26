@@ -1,9 +1,9 @@
 <?php
 
-namespace Slovar\LaraLogsToolkit\Facades;
+namespace Ravols\LaraLogsToolkit\Facades;
 
 use Illuminate\Support\Facades\Facade;
-use Slovar\LaraLogsToolkit\LaraLogsToolkit as LaraLogsToolkitClass;
+use Ravols\LaraLogsToolkit\LaraLogsToolkit as LaraLogsToolkitClass;
 
 class LaraLogsToolkit extends Facade
 {

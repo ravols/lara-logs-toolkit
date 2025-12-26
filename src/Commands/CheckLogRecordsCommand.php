@@ -1,20 +1,19 @@
 <?php
 
-namespace Slovar\LaraLogsToolkit\Commands;
+namespace Ravols\LaraLogsToolkit\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
-use Slovar\LaraLogsToolkit\LaraLogsToolkit;
+use Ravols\LaraLogsToolkit\LaraLogsToolkit;
 
 class CheckLogRecordsCommand extends Command
 {
-    protected $signature = 'lara-logs:check-records {channel? : The log channel to check (defaults to configured channel)}';
-
+    protected $signature = 'lara-logs:check-records {channel? : The log channel to check (defaults to daily channel)}';
     protected $description = 'Check how many log records exist in a specified log channel';
 
     public function handle(LaraLogsToolkit $toolkit): int
     {
-        $channelName = $this->argument('channel') ?? config('lara-logs-toolkit.channel', 'daily');
+        $channelName = $this->argument('channel') ?? 'daily';
 
         if (! config("logging.channels.{$channelName}")) {
             $this->error("Channel '{$channelName}' not found in logging configuration.");
@@ -23,13 +22,8 @@ class CheckLogRecordsCommand extends Command
         }
 
         $logger = Log::channel($channelName);
-        $count = $toolkit->countLogRecords($logger);
-
-        if ($count === null) {
-            $this->error("Could not determine log record count for channel '{$channelName}'.");
-
-            return self::FAILURE;
-        }
+        $logCounts = $toolkit->getLogAnalysis($logger);
+        $count = $logCounts->getTotal();
 
         $this->info("Channel '{$channelName}' contains {$count} log record(s).");
 
