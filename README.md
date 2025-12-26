@@ -4,19 +4,19 @@ A Laravel package that helps you track deployments and monitor log file growth b
 
 ## Problems This Package Solves
 
-### Problem 1: When Did Errors Occur?
-
-**The Issue:** When you see errors in your logs, it's often impossible to tell if they happened before or after your latest deployment. This makes debugging much harder, especially when you need to determine if a deployment introduced new issues.
-
-**The Solution:** This package automatically logs a timestamp marker whenever `composer dump-autoload` finishes. By adding a single line to your `composer.json`, you'll have clear deployment markers in your logs, making it easy to see which errors occurred before or after each deployment.
-
-### Problem 2: Log Files Filling Up After Deployment
+### Problem 1: Log Files Filling Up After Deployment
 
 **The Issue:** After a deployment, your logs might start filling up with errors, but if you're distracted or not actively monitoring, you might miss critical issues until they become severe.
 
 **The Solution:** This package provides a command to quickly check how many log records exist in any specified log channel from your `config/logging.php`. Run it after deployments or set it up in monitoring to get instant visibility into log growth.
 
 **Extended Possibilities:** You can create your own custom commands that check for new log records and send notifications (Slack, email, or SMS) when a threshold is met. This allows you to set up automated alerting that triggers when log growth exceeds acceptable levels after deployments.
+
+### Problem 2: When Did Errors Occur?
+
+**The Issue:** When you see errors in your logs, it's often impossible to tell if they happened before or after your latest deployment. This makes debugging much harder, especially when you need to determine if a deployment introduced new issues.
+
+**The Solution:** This package automatically logs a timestamp marker whenever `composer dump-autoload` finishes. By adding a single line to your `composer.json`, you'll have clear deployment markers in your logs, making it easy to see which errors occurred before or after each deployment.
 
 ## Installation
 
