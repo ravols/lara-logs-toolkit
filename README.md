@@ -34,7 +34,7 @@ Publish the configuration file:
 php artisan vendor:publish --tag=lara-logs-toolkit-config
 ```
 
-This will create `config/lara-logs-toolkit.php` where you can configure the default log channel and cache settings:
+This will create `config/lara-logs-toolkit.php` where you can configure the composer dump-autoload log channel and cache settings:
 
 ```php
 'composer_dump_autoload_channel' => env('LARA_LOGS_TOOLKIT_COMPOSER_DUMP_AUTOLOAD_CHANNEL', 'daily'),
@@ -42,7 +42,7 @@ This will create `config/lara-logs-toolkit.php` where you can configure the defa
 ```
 
 **Configuration Options:**
-- `composer_dump_autoload_channel` - The log channel where the composer dump-autoload notification will be written. This should match one of the channels defined in your application's logging configuration.
+- `composer_dump_autoload_channel` - The log channel where the composer dump-autoload notification will be written. This should match one of the channels defined in your application's logging configuration (default: `daily`)
 - `comparison_cache_ttl` - Cache time-to-live in seconds for storing log analysis comparison results (default: `600` seconds / 10 minutes)
 
 ## Usage
@@ -89,7 +89,7 @@ To check how many log records exist in a specific channel:
 php artisan lara-logs:check-records [channel]
 ```
 
-If no channel is specified, it will use the channel configured in `config/lara-logs-toolkit.php` (defaults to `daily`).
+If no channel is specified, it defaults to `daily`.
 
 **Examples:**
 
@@ -121,12 +121,12 @@ use Ravols\LaraLogsToolkit\Facades\LaraLogsToolkit;
 $logger = Log::channel('daily');
 $comparison = LaraLogsToolkit::getLogAnalysisComparison($logger);
 
-// Access the results using DTO properties
-$currentCounts = $comparison->current;      // LogCountsData DTO
-$cachedCounts = $comparison->cached;        // LogCountsData DTO
-$differences = $comparison->differences;    // LogCountsData DTO
+// Access the results using properties
+$currentCounts = $comparison->current;      // LogCountsData
+$cachedCounts = $comparison->cached;        // LogCountsData
+$differences = $comparison->differences;    // LogCountsData
 
-// Example: Check if errors increased using DTO methods
+// Example: Check if errors increased using methods
 if ($comparison->isNewError()) {
     echo "Errors increased by {$comparison->getNewErrorCount()} since last check\n";
 }
@@ -153,16 +153,15 @@ if ($comparison->cachedAt !== null) {
 
 The method automatically caches the current analysis results for comparison on the next call. The cache TTL is configurable via `config/lara-logs-toolkit.php` using the `comparison_cache_ttl` key (default: 600 seconds).
 
-**Return Type:** `LogAnalysisComparisonData` DTO containing:
-- `current` - `LogCountsData` DTO with current log counts by level
-- `cached` - `LogCountsData` DTO with previously cached log counts
-- `differences` - `LogCountsData` DTO showing the difference between current and cached (current - cached)
+**Return Type:** `LogAnalysisComparisonData` containing:
+- `current` - `LogCountsData` with current log counts by level
+- `cached` - `LogCountsData` with previously cached log counts
+- `differences` - `LogCountsData` showing the difference between current and cached (current - cached)
 - `logFileName` - The log file name used for caching
 - `cachedAt` - DateTime string (e.g., "2025-01-15 10:30:45") indicating when the cache was created, or `null` if no cache existed
 
-**LogCountsData DTO Properties:**
+**LogCountsData Properties:**
 - `error`, `info`, `warning`, `emergency`, `alert`, `critical`, `debug`, `notice` - Individual log level counts
-- `getError()`, `getInfo()`, `getWarning()`, etc. - Getter methods for each log level
 - `getTotal()` - Get total count across all levels
 
 ### Creating Custom Alert Commands
@@ -191,12 +190,12 @@ class MonitorLogGrowth extends Command
         
         $logger = Log::channel($channel);
         
-        // Get total count using DTO
+        // Get total count
         $logCounts = $laraLogsToolkit->getLogAnalysis($logger);
         $count = $logCounts->getTotal();
         
         // Or get count for a specific log level
-        // $count = $logCounts->getError(); 
+        // $count = $logCounts->error; // or $logCounts->warning, etc. 
         
         // Or compare with cached results to detect changes
         // $comparison = $laraLogsToolkit->getLogAnalysisComparison($logger);
@@ -237,16 +236,14 @@ protected function schedule(Schedule $schedule): void
 }
 ```
 
-## Data Transfer Objects (DTOs)
-
-The package uses DTOs to provide type-safe access to log analysis data:
-
 ### `LogCountsData`
 
-Represents log counts for all log levels. Provides both property access and getter methods.
+Represents log counts for all log levels. Provides readonly properties for direct access to log level counts.
+
+**Properties:**
+- `error`, `info`, `warning`, `emergency`, `alert`, `critical`, `debug`, `notice` - Individual log level counts
 
 **Methods:**
-- `getError()`, `getInfo()`, `getWarning()`, etc. - Getter methods for each log level
 - `getTotal()` - Get total count across all levels
 - `toArray()` - Convert to array format
 - `fromArray(array $counts): self` - Static factory method to create from array
@@ -255,13 +252,12 @@ Represents log counts for all log levels. Provides both property access and gett
 ```php
 $logCounts = LaraLogsToolkit::getLogAnalysis(Log::channel('daily'));
 
-// Property access
+// Access individual log level counts via properties
 $errors = $logCounts->error;
+$warnings = $logCounts->warning;
+$info = $logCounts->info;
 
-// Getter methods
-$errors = $logCounts->getError();
-
-// Get total
+// Get total count across all levels
 $total = $logCounts->getTotal();
 ```
 
@@ -270,9 +266,9 @@ $total = $logCounts->getTotal();
 Represents a comparison between current and cached log analysis results.
 
 **Properties:**
-- `current` - `LogCountsData` DTO with current log counts
-- `cached` - `LogCountsData` DTO with previously cached log counts
-- `differences` - `LogCountsData` DTO showing differences (current - cached)
+- `current` - `LogCountsData` with current log counts
+- `cached` - `LogCountsData` with previously cached log counts
+- `differences` - `LogCountsData` showing differences (current - cached)
 - `logFileName` - The log file name used for caching
 - `cachedAt` - DateTime string (e.g., "2025-01-15 10:30:45") indicating when the cache was created, or `null` if no cache existed
 
@@ -294,7 +290,7 @@ if ($comparison->isNewError()) {
     $newErrors = $comparison->getNewErrorCount();
 }
 
-// Access DTO properties directly
+// Access properties directly
 $currentErrors = $comparison->current->error;
 $cachedErrors = $comparison->cached->error;
 $errorDiff = $comparison->differences->error;
@@ -313,25 +309,26 @@ The `LaraLogsToolkit` class provides the following methods:
 
 #### `getLogAnalysis(LoggerInterface $logger): LogCountsData`
 
-Analyzes logs and returns a `LogCountsData` DTO with detailed log counts by level.
+Analyzes logs and returns a `LogCountsData` with detailed log counts by level.
 
 ```php
 $logCounts = LaraLogsToolkit::getLogAnalysis(Log::channel('daily'));
 
-// Get counts of errors and information
-$errorCount = $logCounts->getError();
-$infoCount = $logCounts->getInfo();
+// Access individual log level counts
+$errorCount = $logCounts->error;
+$infoCount = $logCounts->info;
+$warningCount = $logCounts->warning;
 
-// Get total count
+// Get total count across all levels
 $total = $logCounts->getTotal();
 ```
 
 #### `getLogAnalysisComparison(LoggerInterface $logger): LogAnalysisComparisonData`
 
-Compares current log analysis with cached results and returns a `LogAnalysisComparisonData` DTO containing:
-- `current` - `LogCountsData` DTO with current log counts by level
-- `cached` - `LogCountsData` DTO with previously cached log counts
-- `differences` - `LogCountsData` DTO showing differences between current and cached (current - cached)
+Compares current log analysis with cached results and returns a `LogAnalysisComparisonData` containing:
+- `current` - `LogCountsData` with current log counts by level
+- `cached` - `LogCountsData` with previously cached log counts
+- `differences` - `LogCountsData` showing differences between current and cached (current - cached)
 - `logFileName` - The log file name used for caching
 - `cachedAt` - DateTime string indicating when the cache was created, or `null` if no cache existed
 
@@ -345,6 +342,9 @@ if ($comparison->isNewError()) {
     $newErrors = $comparison->getNewErrorCount();
 }
 
+// Or access directly
+$newErrors = $comparison->differences->error;
+$currentErrors = $comparison->current->error;
 
 // Check for any new issues
 if ($comparison->hasAnyNewIssues()) {

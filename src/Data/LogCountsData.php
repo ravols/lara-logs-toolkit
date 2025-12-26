@@ -44,46 +44,6 @@ class LogCountsData
         ];
     }
 
-    public function getError(): int
-    {
-        return $this->error;
-    }
-
-    public function getInfo(): int
-    {
-        return $this->info;
-    }
-
-    public function getWarning(): int
-    {
-        return $this->warning;
-    }
-
-    public function getEmergency(): int
-    {
-        return $this->emergency;
-    }
-
-    public function getAlert(): int
-    {
-        return $this->alert;
-    }
-
-    public function getCritical(): int
-    {
-        return $this->critical;
-    }
-
-    public function getDebug(): int
-    {
-        return $this->debug;
-    }
-
-    public function getNotice(): int
-    {
-        return $this->notice;
-    }
-
     public function getTotal(): int
     {
         return $this->error
