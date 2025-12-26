@@ -3,24 +3,28 @@
     "description": "LaraLogsToolkit is a package that allows you to analyze your logs and get the count of errors, info and warnings.",
     "keywords": [
         "ravols",
-        "lara-logs-toolkit"
+        "lara-logs-toolkit",
+        "laravel",
+        "log",
+        "analysis",
+        "comparison",
+        "deployment",
+        "tracking"
     ],
     "homepage": "https://github.com/ravols/lara-logs-toolkit",
     "license": "MIT",
     "authors": [
         {
             "name": "Jaroslav Stefanec",
-            "email": "jaroslav.stefanec@naucma.sk",
-            "role": "Developer"
+            "email": "jaroslav.stefanec@naucma.sk"
         }
     ],
     "require": {
-        "php": "^8.2",
-        "illuminate/console": "^10.0|^11.0",
-        "illuminate/support": "^10.0|^11.0"
+        "php": "^8.2"
     },
     "require-dev": {
-        "spatie/ray": "^1.28"
+        "pestphp/pest": "^3.0.0",
+        "symfony/var-dumper": "^7.3.2"
     },
     "autoload": {
         "psr-4": {
@@ -45,6 +49,7 @@
     "config": {
         "sort-packages": true,
         "allow-plugins": {
+            "pestphp/pest-plugin": true,
             "phpstan/extension-installer": true
         }
     },

@@ -31,14 +31,7 @@ class LaraLogsToolkit
         $currentCounts = $this->getLogAnalysis($logger);
 
         $cachedCountsArray = Cache::get($cacheKey, [
-            'error' => 0,
-            'info' => 0,
-            'warning' => 0,
-            'emergency' => 0,
-            'alert' => 0,
-            'critical' => 0,
-            'debug' => 0,
-            'notice' => 0,
+            ...(new LogCountsData())->toArray(),
             'cachedAt' => null,
         ]);
 
@@ -55,8 +48,10 @@ class LaraLogsToolkit
             notice: $currentCounts->notice - $cachedCounts->notice,
         );
 
-        $cacheTtl = config('lara-logs-toolkit.comparison_cache_ttl', 600);
-        Cache::put($cacheKey, array_merge($currentCounts->toArray(), ['cachedAt' => now()->toDateTimeString()]), $cacheTtl);
+        Cache::put($cacheKey, [
+            ...$currentCounts->toArray(),
+            'cachedAt' => now()->toDateTimeString(),
+        ], config('lara-logs-toolkit.comparison_cache_ttl', 600));
 
         return new LogAnalysisComparisonData(
             current: $currentCounts,
