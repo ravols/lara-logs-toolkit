@@ -196,7 +196,7 @@ class MonitorLogGrowth extends Command
         $count = $logCounts->getTotal();
         
         // Or get count for a specific log level
-        // $count = $logCounts->getError(); // or $logCounts->error
+        // $count = $logCounts->getError(); 
         
         // Or compare with cached results to detect changes
         // $comparison = $laraLogsToolkit->getLogAnalysisComparison($logger);
@@ -244,9 +244,6 @@ The package uses DTOs to provide type-safe access to log analysis data:
 ### `LogCountsData`
 
 Represents log counts for all log levels. Provides both property access and getter methods.
-
-**Properties:**
-- `error`, `info`, `warning`, `emergency`, `alert`, `critical`, `debug`, `notice` - Individual log level counts (readonly)
 
 **Methods:**
 - `getError()`, `getInfo()`, `getWarning()`, etc. - Getter methods for each log level
@@ -321,11 +318,7 @@ Analyzes logs and returns a `LogCountsData` DTO with detailed log counts by leve
 ```php
 $logCounts = LaraLogsToolkit::getLogAnalysis(Log::channel('daily'));
 
-// Access via properties
-$errorCount = $logCounts->error;
-$infoCount = $logCounts->info;
-
-// Or use getter methods
+// Get counts of errors and information
 $errorCount = $logCounts->getError();
 $infoCount = $logCounts->getInfo();
 
@@ -352,9 +345,6 @@ if ($comparison->isNewError()) {
     $newErrors = $comparison->getNewErrorCount();
 }
 
-// Or access directly via DTO properties
-$newErrors = $comparison->differences->error;
-$currentErrors = $comparison->current->error;
 
 // Check for any new issues
 if ($comparison->hasAnyNewIssues()) {

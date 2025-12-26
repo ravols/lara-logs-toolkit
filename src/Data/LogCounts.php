@@ -1,6 +1,6 @@
 <?php
 
-namespace Slovar\LaraLogsToolkit\Data;
+namespace Ravols\LaraLogsToolkit\Data;
 
 class LogCountsData
 {
