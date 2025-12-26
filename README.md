@@ -49,7 +49,15 @@ This will create `config/lara-logs-toolkit.php` where you can configure the defa
 
 ### Deployment Tracking
 
-To automatically log when `composer dump-autoload` finishes, add this line to the `scripts` section of your `composer.json`:
+To automatically log when `composer dump-autoload` finishes, you need to add the command to your `composer.json` file.
+
+**Step 1:** Open your `composer.json` file in the root of your Laravel project.
+
+**Step 2:** Find the `scripts` section. If it doesn't exist, create it at the root level of your JSON.
+
+**Step 3:** Add or update the `post-autoload-dump` array. Add `"@php artisan lara-logs:composer-dump-autoload"` as the last item in the array.
+
+**Example - If you already have a `post-autoload-dump` script:**
 
 ```json
 {
@@ -62,6 +70,26 @@ To automatically log when `composer dump-autoload` finishes, add this line to th
     }
 }
 ```
+
+**Example - If you don't have a `scripts` section yet:**
+
+```json
+{
+    "name": "your/package",
+    "require": {
+        "php": "^8.1"
+    },
+    "scripts": {
+        "post-autoload-dump": [
+            "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
+            "@php artisan package:discover --ansi",
+            "@php artisan lara-logs:composer-dump-autoload"
+        ]
+    }
+}
+```
+
+**Important:** The line `"@php artisan lara-logs:composer-dump-autoload"` should be added as the **last item** in the `post-autoload-dump` array, after the existing Laravel commands.
 
 Now, every time you run `composer dump-autoload` (which happens automatically during deployments), you'll see a log entry like:
 
@@ -154,7 +182,6 @@ The method automatically caches the current analysis results for comparison on t
 - `error`, `info`, `warning`, `emergency`, `alert`, `critical`, `debug`, `notice` - Individual log level counts
 - `getError()`, `getInfo()`, `getWarning()`, etc. - Getter methods for each log level
 - `getTotal()` - Get total count across all levels
-- `toArray()` - Convert to array format
 
 ### Creating Custom Alert Commands
 
