@@ -57,28 +57,10 @@ To automatically log when `composer dump-autoload` finishes, you need to add the
 
 **Step 3:** Add or update the `post-autoload-dump` array. Add `"@php artisan lara-logs:composer-dump-autoload"` as the last item in the array.
 
-**Example - If you already have a `post-autoload-dump` script:**
+**Example - of a `post-autoload-dump` script:**
 
 ```json
 {
-    "scripts": {
-        "post-autoload-dump": [
-            "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
-            "@php artisan package:discover --ansi",
-            "@php artisan lara-logs:composer-dump-autoload"
-        ]
-    }
-}
-```
-
-**Example - If you don't have a `scripts` section yet:**
-
-```json
-{
-    "name": "your/package",
-    "require": {
-        "php": "^8.1"
-    },
     "scripts": {
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
