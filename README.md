@@ -110,6 +110,49 @@ Channel 'daily' contains 1523 log record(s).
 
 This is especially useful after deployments to quickly see if error counts have increased, or you can integrate it into your monitoring/alerting system.
 
+### Deleting Log Records
+
+To delete log records from configured log channels:
+
+```bash
+php artisan lara-logs:delete-logs
+```
+
+**Options:**
+- `--channels=*` - Comma-separated list of log channel names to delete (e.g., `--channels=daily,api`)
+- `--action=` - Delete action: `latest` or `all` (defaults to interactive selection)
+
+**Examples:**
+
+```bash
+# Interactive mode - select channels and action
+php artisan lara-logs:delete-logs
+
+# Delete all logs from specific channels
+php artisan lara-logs:delete-logs --channels=daily,api --action=all
+
+# Delete latest record from a single channel
+php artisan lara-logs:delete-logs --channels=single --action=latest
+
+# Multiple channels with comma-separated list
+php artisan lara-logs:delete-logs --channels=daily,api --action=all
+```
+
+**Interactive Features:**
+- If no channels are specified, you'll be prompted with an interactive multisearch to select one or more channels
+- If no action is specified, you'll be prompted to choose between:
+  - **Delete only latest record** - Deletes the latest log file
+  - **Delete all logs** - Deletes all log files for the selected channel(s)
+
+**Safety Features:**
+- In production environment, you'll be prompted for confirmation before deletion
+- The command validates that selected channels exist in your logging configuration
+- Provides success/error counts for batch operations
+
+**Delete Actions:**
+- `latest` - Deletes the latest log file for each selected channel
+- `all` - Deletes all log files for each selected channel (handles both single and daily log file formats)
+
 ### Comparing Log Analysis with Cached Results
 
 The package provides a method to compare current log analysis with previously cached results. This is useful for detecting changes in log counts over time:
@@ -370,6 +413,7 @@ if ($comparison->cachedAt) {
 
 - `php artisan lara-logs:composer-dump-autoload` - Manually log a deployment marker
 - `php artisan lara-logs:check-records [channel]` - Check log record count for a channel
+- `php artisan lara-logs:delete-logs` - Delete log records from selected channels (supports `--channels` and `--action` options)
 
 ## Changelog
 
