@@ -219,4 +219,31 @@ class LogAnalyser
         $this->logCounts['debug'] += substr_count($content, '.DEBUG');
         $this->logCounts['notice'] += substr_count($content, '.NOTICE');
     }
+
+    public function getLogFilePath(): ?string
+    {
+        $handlers = $this->getHandlers();
+
+        foreach ($handlers as $handler) {
+            $url = $this->getHandlerUrl($handler);
+
+            if ($url === null) {
+                continue;
+            }
+
+            $filePath = $this->urlToFilePath($url);
+
+            if (file_exists($filePath)) {
+                return $filePath;
+            }
+
+            $latestFile = $this->findLatestLogFile($url);
+
+            if ($latestFile !== null) {
+                return $latestFile;
+            }
+        }
+
+        return null;
+    }
 }

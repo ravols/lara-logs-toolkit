@@ -4,6 +4,7 @@ namespace Ravols\LaraLogsToolkit;
 
 use Illuminate\Support\ServiceProvider;
 use Ravols\LaraLogsToolkit\Commands\CheckLogRecordsCommand;
+use Ravols\LaraLogsToolkit\Commands\DeleteLogRecordsCommand;
 use Ravols\LaraLogsToolkit\Commands\LogComposerDumpAutoloadCommand;
 
 class LaraLogsToolkitServiceProvider extends ServiceProvider
@@ -11,7 +12,7 @@ class LaraLogsToolkitServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->mergeConfigFrom(
-            __DIR__.'/../config/lara-logs-toolkit.php',
+            __DIR__ . '/../config/lara-logs-toolkit.php',
             'lara-logs-toolkit'
         );
 
@@ -24,12 +25,13 @@ class LaraLogsToolkitServiceProvider extends ServiceProvider
     {
         if ($this->app->runningInConsole()) {
             $this->publishes([
-                __DIR__.'/../config/lara-logs-toolkit.php' => config_path('lara-logs-toolkit.php'),
+                __DIR__ . '/../config/lara-logs-toolkit.php' => config_path('lara-logs-toolkit.php'),
             ], 'lara-logs-toolkit-config');
 
             $this->commands([
                 LogComposerDumpAutoloadCommand::class,
                 CheckLogRecordsCommand::class,
+                DeleteLogRecordsCommand::class,
             ]);
         }
     }
