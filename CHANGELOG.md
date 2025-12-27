@@ -2,6 +2,20 @@
 
 All notable changes to `ravols/lara-logs-toolkit` will be documented in this file.
 
+## [1.0.1] - 2025-12-27
+
+### Added
+- **Log Deletion**: Command and tool to delete log records from configured log channels
+  - `lara-logs:delete-logs` command to delete log records
+  - Supports deletion of latest record or all logs
+  - Interactive channel selection with multisearch
+  - Production environment confirmation prompt
+  - Supports both single and daily log file formats
+
+### Features
+- Delete latest log record or all logs from selected channels
+- Flexible channel selection via command options or interactive prompts
+
 ## [1.0.0] - 2025-12-25
 
 ### Added
