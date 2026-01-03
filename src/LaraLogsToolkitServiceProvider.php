@@ -19,6 +19,8 @@ class LaraLogsToolkitServiceProvider extends ServiceProvider
         $this->app->singleton(LaraLogsToolkit::class, function () {
             return new LaraLogsToolkit();
         });
+
+        $this->app->alias(LaraLogsToolkit::class, 'lara-logs-toolkit');
     }
 
     public function boot(): void

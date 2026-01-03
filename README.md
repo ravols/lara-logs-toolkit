@@ -550,6 +550,100 @@ foreach ($analysis->getChannels() as $channelName => $channelData) {
 }
 ```
 
+#### `getLastError(string $channel = 'stack', bool $withStackTrace = false): ?string`
+
+Retrieves the last error message from a specific log channel. By default, returns only the error message without the stack trace.
+
+**Parameters:**
+- `$channel` (string, default: `'stack'`) - The log channel name to check
+- `$withStackTrace` (bool, default: `false`) - If `true`, returns the full error entry including stack trace
+
+**Returns:** `string|null` - The last error message (or full error with stack trace), or `null` if no error is found
+
+```php
+use Ravols\LaraLogsToolkit\Facades\LaraLogsToolkit;
+
+// Get last error message only (default channel: 'stack')
+$error = LaraLogsToolkit::getLastError();
+
+// Get last error from specific channel
+$error = LaraLogsToolkit::getLastError('api');
+
+// Get last error with stack trace
+$error = LaraLogsToolkit::getLastError('stack', true);
+
+// Get last error with stack trace from specific channel
+$error = LaraLogsToolkit::getLastError('api', true);
+```
+
+**Example:**
+```php
+$lastError = LaraLogsToolkit::getLastError('daily');
+
+if ($lastError !== null) {
+    echo "Last error: {$lastError}\n";
+} else {
+    echo "No errors found in daily channel\n";
+}
+
+// With stack trace
+$fullError = LaraLogsToolkit::getLastError('daily', true);
+if ($fullError) {
+    // Contains full error with stack trace
+    echo $fullError;
+}
+```
+
+#### `getLastRecord(string $channel = 'stack', bool $withStackTrace = false): ?string`
+
+Retrieves the last log record from a specific channel, regardless of log level (ERROR, INFO, WARNING, etc.). Useful for getting the most recent log entry of any type.
+
+**Parameters:**
+- `$channel` (string, default: `'stack'`) - The log channel name to check
+- `$withStackTrace` (bool, default: `false`) - If `true`, returns the full log entry including stack trace (if available)
+
+**Returns:** `string|null` - The last log record (or full entry with stack trace), or `null` if no record is found
+
+```php
+use Ravols\LaraLogsToolkit\Facades\LaraLogsToolkit;
+
+// Get last record (any log level) - message only
+$record = LaraLogsToolkit::getLastRecord();
+
+// Get last record from specific channel
+$record = LaraLogsToolkit::getLastRecord('api');
+
+// Get last record with stack trace
+$record = LaraLogsToolkit::getLastRecord('stack', true);
+
+// Get last record with stack trace from specific channel
+$record = LaraLogsToolkit::getLastRecord('api', true);
+```
+
+**Example:**
+```php
+$lastRecord = LaraLogsToolkit::getLastRecord('daily');
+
+if ($lastRecord !== null) {
+    echo "Last log entry: {$lastRecord}\n";
+} else {
+    echo "No log entries found in daily channel\n";
+}
+
+// With stack trace (if available)
+$fullRecord = LaraLogsToolkit::getLastRecord('daily', true);
+if ($fullRecord) {
+    // Contains full log entry with stack trace
+    echo $fullRecord;
+}
+```
+
+**Example in tinker:**
+```php
+llt()->getLastRecord();
+```
+
+
 ## Available Commands
 
 - `php artisan lara-logs:composer-dump-autoload` - Manually log a deployment marker

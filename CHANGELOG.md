@@ -2,6 +2,25 @@
 
 All notable changes to `ravols/lara-logs-toolkit` will be documented in this file.
 
+## [1.1.0] - 2026-01-03
+
+### Added
+- **Last Error Retrieval**: Method to get the last error from a specific log channel
+  - `getLastError(string $channel = 'stack', bool $withStackTrace = false)` - Returns the last error message from a channel
+  - Supports optional stack trace inclusion
+  - Default channel is 'stack'
+  
+- **Last Record Retrieval**: Method to get the last log record (any level) from a specific channel
+  - `getLastRecord(string $channel = 'stack', bool $withStackTrace = false)` - Returns the last log entry from a channel
+  - Supports optional stack trace inclusion
+  - Works with all log levels (ERROR, INFO, WARNING, etc.)
+
+### Changed
+- **Code Refactoring**: Extracted log parsing logic into `LogReader` tool class for better maintainability
+  - Created `LogReader` class in `Tools` namespace
+  - Simplified log parsing methods using Laravel's `Str` facade
+  - Improved code readability and consistency
+
 ## [1.0.1] - 2025-12-27
 
 ### Added

@@ -9,6 +9,7 @@ use Ravols\LaraLogsToolkit\Data\AllChannelsLogAnalysisData;
 use Ravols\LaraLogsToolkit\Data\LogAnalysisComparisonData;
 use Ravols\LaraLogsToolkit\Data\LogCountsData;
 use Ravols\LaraLogsToolkit\Tools\LogAnalyser;
+use Ravols\LaraLogsToolkit\Tools\LogReader;
 
 class LaraLogsToolkit
 {
@@ -131,5 +132,53 @@ class LaraLogsToolkit
         }
 
         return new AllChannelsLogAnalysisData($results);
+    }
+
+    /**
+     * Get the last error message from a specific channel
+     *
+     * @param string $channel Channel name (default: 'stack')
+     * @param bool $withStackTrace If true, returns error with stack trace
+     * @return string|null The last error message or null if no error found
+     */
+    public function getLastError(string $channel = 'stack', bool $withStackTrace = false): ?string
+    {
+        try {
+            $logger = Log::channel($channel);
+            $logReader = new LogReader();
+            $content = $logReader->setLogger($logger)->getLogContent();
+
+            if ($content === null) {
+                return null;
+            }
+
+            return $logReader->extractLastLogEntry($content, 'ERROR', $withStackTrace);
+        } catch (\Exception $e) {
+            return null;
+        }
+    }
+
+    /**
+     * Get the last log record from a specific channel (any log level)
+     *
+     * @param string $channel Channel name (default: 'stack')
+     * @param bool $withStackTrace If true, returns record with stack trace
+     * @return string|null The last log record or null if no record found
+     */
+    public function getLastRecord(string $channel = 'stack', bool $withStackTrace = false): ?string
+    {
+        try {
+            $logger = Log::channel($channel);
+            $logReader = new LogReader();
+            $content = $logReader->setLogger($logger)->getLogContent();
+
+            if ($content === null) {
+                return null;
+            }
+
+            return $logReader->extractLastRecord($content, $withStackTrace);
+        } catch (\Exception $e) {
+            return null;
+        }
     }
 }
