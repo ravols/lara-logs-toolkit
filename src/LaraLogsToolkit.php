@@ -97,9 +97,10 @@ class LaraLogsToolkit
     /**
      * Get log analysis for channels defined in config/logging.php
      *
+     * @param bool $useCache If true, uses getLogAnalysisComparison instead of getLogAnalysis
      * @return AllChannelsLogAnalysisData
      */
-    public function getAllChannelsLogAnalysis(): AllChannelsLogAnalysisData
+    public function getAllChannelsLogAnalysis(bool $useCache = false): AllChannelsLogAnalysisData
     {
         $allChannels = array_keys(config('logging.channels', []));
         $excludedChannels = $this->excludedChannels ?? self::DEFAULT_EXCLUDED_CHANNELS;
@@ -110,9 +111,22 @@ class LaraLogsToolkit
         foreach ($channelsToAnalyze as $channelName) {
             try {
                 $logger = Log::channel($channelName);
-                $results[$channelName] = $this->getLogAnalysis($logger);
+                if ($useCache) {
+                    $results[$channelName] = $this->getLogAnalysisComparison($logger);
+                } else {
+                    $results[$channelName] = $this->getLogAnalysis($logger);
+                }
             } catch (\Exception $e) {
-                $results[$channelName] = new LogCountsData();
+                if ($useCache) {
+                    $results[$channelName] = new LogAnalysisComparisonData(
+                        current: new LogCountsData(),
+                        cached: new LogCountsData(),
+                        differences: new LogCountsData(),
+                        logFileName: 'unknown',
+                    );
+                } else {
+                    $results[$channelName] = new LogCountsData();
+                }
             }
         }
 

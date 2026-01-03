@@ -207,6 +207,62 @@ The method automatically caches the current analysis results for comparison on t
 - `error`, `info`, `warning`, `emergency`, `alert`, `critical`, `debug`, `notice` - Individual log level counts
 - `getTotal()` - Get total count across all levels
 
+### Analyzing All Log Channels
+
+You can analyze all log channels at once using `getAllChannelsLogAnalysis()`. This method automatically excludes certain channels by default (like `stack`, `null`, `single`, `daily`, etc.) but allows you to customize which channels to include or exclude.
+
+```php
+use Ravols\LaraLogsToolkit\Facades\LaraLogsToolkit;
+
+// Analyze all channels (excluding defaults)
+$analysis = LaraLogsToolkit::getAllChannelsLogAnalysis();
+
+// Get aggregated totals across all channels
+$totalErrors = $analysis->getError();
+$totalWarnings = $analysis->getWarning();
+$total = $analysis->getTotal();
+
+// Get specific channel data
+$carriersData = $analysis->getChannel('carriers');
+if ($carriersData) {
+    $carriersErrors = $carriersData->error;
+}
+
+// With caching/comparison enabled
+$analysis = LaraLogsToolkit::getAllChannelsLogAnalysis(useCache: true);
+
+// Access comparison data for specific channels
+$comparison = $analysis->getComparisonChannel('carriers');
+if ($comparison && $comparison->hasAnyNewIssues()) {
+    $newErrors = $comparison->getNewErrorCount();
+    echo "New errors in carriers channel: {$newErrors}\n";
+}
+
+// Customize excluded channels
+$analysis = LaraLogsToolkit::excludeChannels(['stack', 'null', 'slack'])
+    ->getAllChannelsLogAnalysis();
+
+// Include a normally excluded channel
+$analysis = LaraLogsToolkit::includeChannels('stack')
+    ->getAllChannelsLogAnalysis();
+
+// Chain configuration methods
+$analysis = LaraLogsToolkit::excludeChannels(['carriers'])
+    ->includeChannels('stack')
+    ->getAllChannelsLogAnalysis(useCache: true);
+```
+
+**Default Excluded Channels:** `single`, `daily`, `null`, `papertrail`, `stderr`, `syslog`, `errorlog`, `slack`, `emergency`
+
+**AllChannelsLogAnalysisData Methods:**
+- `getChannel(string $channelName)` - Get data for a specific channel
+- `getChannels()` - Get all channels data
+- `getError()`, `getInfo()`, `getWarning()`, etc. - Aggregated totals across all channels
+- `getTotal()` - Total count across all channels and log levels
+- `getComparisonChannel(string $channelName)` - Get comparison data for a channel
+- `hasComparisonData()` - Check if any channels have comparison data
+- `toArray()` - Convert to array format
+
 ### Creating Custom Alert Commands
 
 You can create your own commands that monitor log growth and send notifications when thresholds are exceeded. Here's an example:
@@ -408,6 +464,91 @@ if ($comparison->cachedAt) {
 - `getTotalNewCount()` - Get total count of all new log entries across all levels
 - `getCurrentErrorCount()`, `getCurrentWarningCount()` - Get current counts
 - `getCachedErrorCount()`, `getCachedWarningCount()` - Get cached counts
+
+#### `getAllChannelsLogAnalysis(bool $useCache = false): AllChannelsLogAnalysisData`
+
+Analyzes all log channels defined in `config/logging.php` (excluding default excluded channels) and returns an `AllChannelsLogAnalysisData` DTO with aggregated results.
+
+**Default Excluded Channels:** `single`, `daily`, `null`, `papertrail`, `stderr`, `syslog`, `errorlog`, `slack`, `emergency`
+
+**Parameters:**
+- `$useCache` (bool, default: `false`) - If `true`, uses `getLogAnalysisComparison()` instead of `getLogAnalysis()` for each channel, providing comparison data with cached results.
+
+**Chainable Configuration Methods:**
+- `excludeChannels(array|string $channels): self` - Override the default excluded channels
+- `includeChannels(array|string $channels): self` - Include channels by removing them from the excluded list
+
+```php
+// Basic usage - analyze all channels (excluding defaults)
+$analysis = LaraLogsToolkit::getAllChannelsLogAnalysis();
+
+// Get aggregated totals across all channels
+$totalErrors = $analysis->getError();
+$totalWarnings = $analysis->getWarning();
+$total = $analysis->getTotal();
+
+// Get specific channel data
+$carriersData = $analysis->getChannel('carriers');
+if ($carriersData instanceof LogCountsData) {
+    $carriersErrors = $carriersData->error;
+}
+
+// With caching/comparison enabled
+$analysis = LaraLogsToolkit::getAllChannelsLogAnalysis(useCache: true);
+
+// Access comparison data for a specific channel
+$comparison = $analysis->getComparisonChannel('carriers');
+if ($comparison) {
+    $newErrors = $comparison->getNewErrorCount();
+    $hasNewIssues = $comparison->hasAnyNewIssues();
+}
+
+// Check if any channels have comparison data
+if ($analysis->hasComparisonData()) {
+    // Handle comparison-specific logic
+}
+
+// Customize excluded channels
+$analysis = LaraLogsToolkit::excludeChannels(['stack', 'null', 'slack'])
+    ->getAllChannelsLogAnalysis();
+
+// Include a normally excluded channel
+$analysis = LaraLogsToolkit::includeChannels('stack')
+    ->getAllChannelsLogAnalysis();
+
+// Chain both methods
+$analysis = LaraLogsToolkit::excludeChannels(['carriers', 'api'])
+    ->includeChannels('stack')
+    ->getAllChannelsLogAnalysis(useCache: true);
+```
+
+**AllChannelsLogAnalysisData Methods:**
+- `getChannel(string $channelName): LogCountsData|LogAnalysisComparisonData|null` - Get data for a specific channel
+- `getChannels(): array` - Get all channels data
+- `getError()`, `getInfo()`, `getWarning()`, `getEmergency()`, `getAlert()`, `getCritical()`, `getDebug()`, `getNotice()` - Get aggregated totals across all channels for each log level
+- `getTotal(): int` - Get total count across all channels and all log levels
+- `getComparisonChannel(string $channelName): ?LogAnalysisComparisonData` - Get comparison data for a specific channel (returns `null` if channel doesn't have comparison data)
+- `hasComparisonData(): bool` - Check if any channels have comparison data
+- `toArray(): array` - Convert to array format (includes both individual channels and aggregated totals)
+- `fromArray(array $data): self` - Static factory method to create from array
+
+**Example with aggregated totals:**
+```php
+$analysis = LaraLogsToolkit::getAllChannelsLogAnalysis();
+
+// Aggregated totals across all channels
+$allErrors = $analysis->getError();        // Sum of all errors from all channels
+$allWarnings = $analysis->getWarning();   // Sum of all warnings from all channels
+$allInfo = $analysis->getInfo();          // Sum of all info logs from all channels
+$total = $analysis->getTotal();           // Total of all log levels from all channels
+
+// Individual channel access
+foreach ($analysis->getChannels() as $channelName => $channelData) {
+    if ($channelData instanceof LogCountsData) {
+        echo "{$channelName}: {$channelData->error} errors\n";
+    }
+}
+```
 
 ## Available Commands
 
