@@ -638,11 +638,67 @@ if ($fullRecord) {
 }
 ```
 
-**Example in tinker:**
+## Tinker Helper Functions
+
+The package provides convenient helper functions for use in `artisan tinker`. These functions allow you to quickly access the last error and last record methods without using the facade or dependency injection.
+
+### `lastError(string $channel = 'stack', bool $withStackTrace = false): ?string`
+
+Helper function to get the last error from a specific log channel. This is a convenience wrapper around `LaraLogsToolkit::getLastError()`.
+
+**Note:** This function is intended for use in `artisan tinker` only.
+
+**Parameters:**
+- `$channel` (string, default: `'stack'`) - The log channel name to check
+- `$withStackTrace` (bool, default: `false`) - If `true`, returns the full error entry including stack trace
+
+**Returns:** `string|null` - The last error message (or full error with stack trace), or `null` if no error is found
+
+**Example in Tinker:**
 ```php
-llt()->getLastRecord();
+php artisan tinker
+
+>>> lastError()
+=> "SQLSTATE[HY000] [2002] Connection refused"
+
+>>> lastError('api')
+=> "Route not found: GET /api/users"
+
+>>> lastError('stack', true)
+=> "[2025-01-03 10:30:45] local.ERROR: SQLSTATE[HY000] [2002] Connection refused
+[stack trace]
+#0 /path/to/file.php(123): function()
+..."
 ```
 
+### `lastRecord(string $channel = 'stack', bool $withStackTrace = false): ?string`
+
+Helper function to get the last log record from a specific channel, regardless of log level. This is a convenience wrapper around `LaraLogsToolkit::getLastRecord()`.
+
+**Note:** This function is intended for use in `artisan tinker` only.
+
+**Parameters:**
+- `$channel` (string, default: `'stack'`) - The log channel name to check
+- `$withStackTrace` (bool, default: `false`) - If `true`, returns the full log entry including stack trace (if available)
+
+**Returns:** `string|null` - The last log record (or full entry with stack trace), or `null` if no record is found
+
+**Example in Tinker:**
+```php
+php artisan tinker
+
+>>> lastRecord()
+=> "User logged in successfully"
+
+>>> lastRecord('api')
+=> "API request processed"
+
+>>> lastRecord('stack', true)
+=> "[2025-01-03 10:30:45] local.INFO: User logged in successfully
+[stack trace]
+#0 /path/to/file.php(123): function()
+..."
+```
 
 ## Available Commands
 
